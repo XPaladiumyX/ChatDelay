@@ -1,4 +1,22 @@
-name: Chat Delay
+name: ChatDelay
 version: '1.1-SNAPSHOT'
 main: skyxnetwork.chatDelay.ChatDelay
 api-version: '1.20'
+description: Plugin to manage a chat delay based on permissions.
+author: XPaladiumyX
+permissions:
+  skyxnetwork.chat-delay:
+    description: Permission to ignore all delays.
+    default: op
+  skyxnetwork.chat-delay.2:
+    description: Allows messages to be sent every 2 seconds.
+    default: true
+  skyxnetwork.chat-delay.1:
+    description: Allows messages to be sent every 1 seconds.
+    default: true
+  skyxnetwork.chat-delay.0.5:
+    description: Allows messages to be sent every 0.5 seconds.
+    default: true
+  skyxnetwork.chat-delay.0.1:
+    description: Allows messages to be sent every 0.1 seconds.
+    default: true
