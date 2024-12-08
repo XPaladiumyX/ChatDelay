@@ -14,6 +14,7 @@
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <adventure-api.version>4.17.0</adventure-api.version>
     </properties>
 
     <build>
@@ -67,6 +68,19 @@
             <artifactId>paper-api</artifactId>
             <version>1.20.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Adventure Platform API -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-api</artifactId>
+            <version>${adventure-api.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/net.kyori/adventure-platform-bukkit -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-platform-bukkit</artifactId>
+            <version>4.3.4</version>
         </dependency>
     </dependencies>
 </project>
