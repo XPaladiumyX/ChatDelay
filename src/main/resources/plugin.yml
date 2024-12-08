@@ -1,0 +1,4 @@
+name: Chat Delay
+version: '1.1-SNAPSHOT'
+main: skyxnetwork.chatDelay.ChatDelay
+api-version: '1.20'
