@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public final class ChatDelay extends JavaPlugin implements Listener {
 
-    private HashMap<UUID, Long> chatCooldowns = new HashMap<>();
+    private final HashMap<UUID, Long> chatCooldowns = new HashMap<>();
     private String chatPrefix;
 
     @Override
@@ -60,7 +60,9 @@ public final class ChatDelay extends JavaPlugin implements Listener {
 
         if (currentTime - lastChatTime < cooldownTime) {
             event.setCancelled(true);
-            player.sendMessage(chatPrefix + ChatColor.RED + " You need to wait " + delay + " before sending a another message !");
+            player.sendMessage(net.kyori.adventure.text.Component.text(chatPrefix + " You need to wait " + delay + " seconds before sending a another message !")
+                    .color(net.kyori.adventure.text.format.NamedTextColor.RED));
+
             return;
         }
 
