@@ -1,12 +1,13 @@
 package skyxnetwork.chatDelay;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -16,26 +17,41 @@ public final class ChatDelay extends JavaPlugin implements Listener {
 
     private final HashMap<UUID, Long> chatCooldowns = new HashMap<>();
     private String chatPrefix;
+    private BukkitAudiences adventure;
 
     @Override
     public void onEnable() {
-        // Chargement ou création de la configuration
+        // Adventure audiences for sending messages
+        adventure = BukkitAudiences.create(this);
+
+        // Load or create the configuration
         saveDefaultConfig();
         FileConfiguration config = getConfig();
-        chatPrefix = ChatColor.translateAlternateColorCodes('&', config.getString("Prefix", "&dSky X &9Network &aCHAT-DELAY &8●⏺&7"));
+        chatPrefix = config.getString("Prefix", "&dSky X &9Network &aCHAT-DELAY &8●⏺&7");
 
-        // Enregistrement de l'événement
-        Bukkit.getPluginManager().registerEvents(this, this);
+        // Translate color codes (& to actual color)
+        Component translatedPrefix = Component.text(chatPrefix)
+                .color(TextColor.color(0xDDDDDD)); // Default color, set a specific color if needed
+
+        // Register the event
+        getServer().getPluginManager().registerEvents(this, this);
+
+        // Log prefix with colors
+        adventure.console().sendMessage(translatedPrefix);
+
         getLogger().info("ChatDelay enabled!");
     }
 
     @Override
     public void onDisable() {
         getLogger().info("ChatDelay disabled.");
+        if (adventure != null) {
+            adventure.close();
+        }
     }
 
     @EventHandler
-    public void onPlayerChat(AsyncPlayerChatEvent event) {
+    public void onPlayerChat(AsyncChatEvent event) {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
         long currentTime = System.currentTimeMillis();
