@@ -1,6 +1,5 @@
 # ChatDelay
 The Minecraft Chat delay plugin of Sky X Network
--
 Devloped by ✨ | Sky X Network | ✨ 
 -
 This Minecraft plugin allows you to set on any player/group a permission to delay the chat (Maximum delay is 3 seconds)
