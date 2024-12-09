@@ -1,5 +1,5 @@
 name: ChatDelay
-version: '1.1-SNAPSHOT'
+version: '1.2-FINAL'
 main: skyxnetwork.chatDelay.ChatDelay
 api-version: '1.20'
 description: Plugin to manage a chat delay based on permissions.
