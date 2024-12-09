@@ -74,7 +74,7 @@ public final class ChatDelay extends JavaPlugin implements Listener {
             // Annuler l'événement et informer le joueur
             event.setCancelled(true);
             adventure.player(player).sendMessage(chatPrefix.append(
-                    Component.text(" Vous devez attendre encore " + String.format("%.1f", timeLeft) + " secondes.")
+                    Component.text(" You need to wait " + String.format("%.1f", timeLeft) + " seconds before sending another message!")
                             .color(NamedTextColor.RED)
             ));
             return;
@@ -96,7 +96,8 @@ public final class ChatDelay extends JavaPlugin implements Listener {
 
         // Vérifier les permissions dynamiques
         for (double i = 0.1; i <= defaultDelay; i += 0.1) {
-            if (player.hasPermission("skyxnetwork.chat-delay." + String.format("%.1f", i))) {
+            String permission = "skyxnetwork.chat-delay." + String.format("%.1f", i);
+            if (player.hasPermission(permission)) {
                 return i;
             }
         }
