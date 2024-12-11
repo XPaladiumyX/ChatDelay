@@ -30,7 +30,7 @@ This plugin is not going to be maintained for other server owners/devlopper
 We made this plugin for the Minecraft Server Sky X Network to fight against spammers.  
 By making this plugin knowing that its one of the rarest chat-delay plugin working on recent versions it was a good idea.  
 
-# This plugin supports Minecraft Spigot 1.20-1.20.1
+# This plugin supports Minecraft Paper 1.20-1.20.1
 **This plugin will not be edited/Updated for Developers/Server Owners**
 
 # Please consider giving a star, it will help a lot ♥️! ^^
