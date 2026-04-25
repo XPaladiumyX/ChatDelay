@@ -93,7 +93,7 @@ public final class PermissionHandler {
 
             double bestDelay = -1;
 
-            for (InheritanceNode node : user.resolveNodes(NodeType.INHERITANCE)) {
+            for (InheritanceNode node : user.getNodes(NodeType.INHERITANCE)) {
                 String groupName = node.getGroupName().toLowerCase();
 
                 if (plugin.getConfig().contains("ranks." + groupName + ".delay")) {

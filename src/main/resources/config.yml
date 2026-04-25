@@ -29,7 +29,7 @@ ranks:
   "mvp+":
     delay: 0.1
 
-custom-permission-delay: 5.0
+custom-permission-delay: 0.1
 
 messages:
   cooldown: "&cYou need to wait {time} seconds before sending another message!"
