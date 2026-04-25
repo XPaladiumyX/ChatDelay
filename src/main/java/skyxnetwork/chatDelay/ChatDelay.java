@@ -80,16 +80,16 @@ public final class ChatDelay extends JavaPlugin implements Listener {
 
         String message = PlainTextComponentSerializer.plainText().serialize(event.message());
 
-        if (antiSpamDetector.detectSpam(player, message)) {
-            event.setCancelled(true);
-            adventure.player(player).sendMessage(MessageFactory.spamDetectedMessage());
-            return;
-        }
-
         if (chatManager.isOnCooldown(player)) {
             event.setCancelled(true);
             double timeLeft = chatManager.getRemainingCooldown(player);
             adventure.player(player).sendMessage(MessageFactory.cooldownMessage(timeLeft));
+            return;
+        }
+
+        if (antiSpamDetector.detectSpam(player, message)) {
+            event.setCancelled(true);
+            adventure.player(player).sendMessage(MessageFactory.spamDetectedMessage());
             return;
         }
 
