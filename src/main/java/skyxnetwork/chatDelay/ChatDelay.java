@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import skyxnetwork.chatDelay.commands.CooldownCommand;
+import skyxnetwork.chatDelay.commands.ReloadCommand;
 import skyxnetwork.chatDelay.manager.AntiSpamDetector;
 import skyxnetwork.chatDelay.manager.ChatManager;
 import skyxnetwork.chatDelay.manager.PermissionHandler;
