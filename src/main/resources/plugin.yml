@@ -1,7 +1,7 @@
 name: ChatDelay
 version: '2.0.0'
 main: skyxnetwork.chatDelay.ChatDelay
-api-version: '1.20'
+api-version: '1.21'
 description: Advanced chat delay plugin with anti-spam and permission-based delays.
 author: XPaladiumyX
 commands:
