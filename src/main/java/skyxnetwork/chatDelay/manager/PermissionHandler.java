@@ -3,6 +3,8 @@ package skyxnetwork.chatDelay.manager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
+import net.luckperms.api.node.NodeType;
+import net.luckperms.api.node.types.InheritanceNode;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -64,12 +66,12 @@ public final class PermissionHandler {
             return 0;
         }
 
-        double luckPermsDelay = getDelayFromLuckPerms(player);
+        double luckPermsDelay = getBestDelayFromLuckPerms(player);
         if (luckPermsDelay >= 0) {
             return luckPermsDelay;
         }
 
-        double configuredDelay = getDelayFromConfig(player);
+        double configuredDelay = getBestDelayFromConfig(player);
         if (configuredDelay >= 0) {
             return configuredDelay;
         }
@@ -77,7 +79,7 @@ public final class PermissionHandler {
         return getDelayFromPermissions(player);
     }
 
-    private double getDelayFromLuckPerms(Player player) {
+    private double getBestDelayFromLuckPerms(Player player) {
         LuckPerms luckPerms = plugin.getServer().getServicesManager().load(LuckPerms.class);
         if (luckPerms == null) {
             return -1;
@@ -89,23 +91,22 @@ public final class PermissionHandler {
                 return -1;
             }
 
-            String primaryGroup = user.getPrimaryGroup();
-            if (primaryGroup == null) {
-                return -1;
-            }
+            double bestDelay = -1;
 
-            String path = "ranks." + primaryGroup.toLowerCase() + ".delay";
-            if (plugin.getConfig().contains(path)) {
-                return plugin.getConfig().getDouble(path);
-            }
+            for (InheritanceNode node : user.resolveNodes(NodeType.INHERITANCE)) {
+                String groupName = node.getGroupName().toLowerCase();
 
-            for (Map.Entry<Integer, String> entry : rankOrder.entrySet()) {
-                if (entry.getValue().equalsIgnoreCase(primaryGroup)) {
-                    String configPath = "ranks." + entry.getValue() + ".delay";
-                    if (plugin.getConfig().contains(configPath)) {
-                        return plugin.getConfig().getDouble(configPath);
+                if (plugin.getConfig().contains("ranks." + groupName + ".delay")) {
+                    double delay = plugin.getConfig().getDouble("ranks." + groupName + ".delay");
+
+                    if (bestDelay < 0 || delay < bestDelay) {
+                        bestDelay = delay;
                     }
                 }
+            }
+
+            if (bestDelay >= 0) {
+                return bestDelay;
             }
 
         } catch (Exception e) {
@@ -115,17 +116,23 @@ public final class PermissionHandler {
         return -1;
     }
 
-    private double getDelayFromConfig(Player player) {
+    private double getBestDelayFromConfig(Player player) {
+        double bestDelay = -1;
+
         for (Map.Entry<Integer, String> entry : rankOrder.entrySet()) {
             String group = entry.getValue();
             if (player.hasPermission("group." + group) || player.hasPermission("chatdelay.group." + group)) {
                 String path = "ranks." + group + ".delay";
                 if (plugin.getConfig().contains(path)) {
-                    return plugin.getConfig().getDouble(path);
+                    double delay = plugin.getConfig().getDouble(path);
+                    if (bestDelay < 0 || delay < bestDelay) {
+                        bestDelay = delay;
+                    }
                 }
             }
         }
-        return -1;
+
+        return bestDelay;
     }
 
     private double getDelayFromPermissions(Player player) {
