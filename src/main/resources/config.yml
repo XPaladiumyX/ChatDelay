@@ -10,42 +10,24 @@ anti-spam:
 ranks:
   default:
     delay: 3.0
-  member:
-    delay: 2.5
-  advanced:
-    delay: 2.0
-  legend:
-    delay: 1.5
-  ultra:
-    delay: 1.5
-  ultime:
-    delay: 1.0
-  ultimeii:
-    delay: 1.0
-  ultimeiii:
-    delay: 1.0
-  god:
-    delay: 0.5
   builder:
-    delay: 0.5
+    delay: 0.1
   helper:
-    delay: 0.5
+    delay: 0.1
   mod:
-    delay: 0.3
+    delay: 0.1
   owner:
     delay: 0.1
   media:
     delay: 1.0
-  linked:
-    delay: 1.5
   vip:
     delay: 2.0
   "vip+":
     delay: 1.5
   mvp:
-    delay: 1.5
-  "mvp+":
     delay: 1.0
+  "mvp+":
+    delay: 0.1
 
 custom-permission-delay: 5.0
 

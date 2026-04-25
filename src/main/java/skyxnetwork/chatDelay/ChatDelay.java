@@ -40,7 +40,7 @@ public final class ChatDelay extends JavaPlugin implements Listener {
         adventure = BukkitAudiences.create(this);
 
         permissionHandler = new PermissionHandler(this);
-        chatManager = new ChatManager(permissionHandler);
+        chatManager = new ChatManager(this, permissionHandler);
         antiSpamDetector = new AntiSpamDetector();
 
         registerCommands();
@@ -100,6 +100,7 @@ public final class ChatDelay extends JavaPlugin implements Listener {
         reloadConfig();
         MessageFactory.initialize(this);
         permissionHandler.reload();
+        chatManager.reloadOverrides();
     }
 
     public ChatManager getChatManager() {
