@@ -8,12 +8,44 @@ anti-spam:
   message-history: 5
 
 ranks:
-  vip:
-    delay: 1.0
-  member:
-    delay: 2.0
   default:
     delay: 3.0
+  member:
+    delay: 2.5
+  advanced:
+    delay: 2.0
+  legend:
+    delay: 1.5
+  ultra:
+    delay: 1.5
+  ultime:
+    delay: 1.0
+  ultimeii:
+    delay: 1.0
+  ultimeiii:
+    delay: 1.0
+  god:
+    delay: 0.5
+  builder:
+    delay: 0.5
+  helper:
+    delay: 0.5
+  mod:
+    delay: 0.3
+  owner:
+    delay: 0.1
+  media:
+    delay: 1.0
+  linked:
+    delay: 1.5
+  vip:
+    delay: 2.0
+  "vip+":
+    delay: 1.5
+  mvp:
+    delay: 1.5
+  "mvp+":
+    delay: 1.0
 
 custom-permission-delay: 5.0
 
