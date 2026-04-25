@@ -4,127 +4,131 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.HashMap;
-import java.util.UUID;
+import skyxnetwork.chatDelay.commands.CooldownCommand;
+import skyxnetwork.chatDelay.manager.AntiSpamDetector;
+import skyxnetwork.chatDelay.manager.ChatManager;
+import skyxnetwork.chatDelay.manager.PermissionHandler;
+import skyxnetwork.chatDelay.util.MessageFactory;
 
 public final class ChatDelay extends JavaPlugin implements Listener {
 
-    private final HashMap<UUID, Long> chatCooldowns = new HashMap<>();
-    private Component chatPrefix;
-    private BukkitAudiences adventure;
     private static final String ANSI_MAGENTA = "\u001B[35m";
     private static final String ANSI_LIGHT_GRAY = "\u001B[37m";
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_LIGHT_GREEN = "\u001B[92m";
     private static final String ANSI_RED = "\u001B[31m";
 
+    private BukkitAudiences adventure;
+    private PermissionHandler permissionHandler;
+    private ChatManager chatManager;
+    private AntiSpamDetector antiSpamDetector;
+
     @Override
     public void onEnable() {
-        // Affiche un message de démarrage dans la console
-        Bukkit.getLogger().info(ANSI_LIGHT_GRAY + "︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹");
-        Bukkit.getLogger().info(ANSI_MAGENTA + " _______  ___   _  __   __    __   __    __    _  _______  _______ " + ANSI_RESET);
-        Bukkit.getLogger().info(ANSI_MAGENTA + "|       ||   | | ||  | |  |  |  |_|  |  |  |  | ||       ||       |" + ANSI_RESET);
-        Bukkit.getLogger().info(ANSI_MAGENTA + "|  _____||   |_| ||  |_|  |  |       |  |   |_| ||    ___||_     _|" + ANSI_RESET);
-        Bukkit.getLogger().info(ANSI_MAGENTA + "| |_____ |      _||       |  |       |  |       ||   |___   |   |  " + ANSI_RESET);
-        Bukkit.getLogger().info(ANSI_MAGENTA + "|_____  ||     |_ |_     _|   |     |   |  _    ||    ___|  |   |  " + ANSI_RESET);
-        Bukkit.getLogger().info(ANSI_MAGENTA + " _____| ||    _  |  |   |    |   _   |  | | |   ||   |___   |   |  " + ANSI_RESET);
-        Bukkit.getLogger().info(ANSI_MAGENTA + "|_______||___| |_|  |___|    |__| |__|  |_|  |__||_______|  |___|  " + ANSI_RESET);
-        Bukkit.getLogger().info("   ");
-        Bukkit.getLogger().info(ANSI_LIGHT_GREEN + "Plugin ChatDelay enabled !");
-        Bukkit.getLogger().info(ANSI_LIGHT_GRAY + "︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺");
-        // Initialiser Adventure
+        printBanner(true);
+
+        saveDefaultConfig();
+
+        MessageFactory.initialize(this);
+
         adventure = BukkitAudiences.create(this);
 
-        // Charger ou créer la configuration
-        saveDefaultConfig();
-        FileConfiguration config = getConfig();
+        permissionHandler = new PermissionHandler(this);
+        chatManager = new ChatManager(permissionHandler);
+        antiSpamDetector = new AntiSpamDetector();
 
-        // Charger et convertir le préfixe avec les codes couleurs
-        String prefix = config.getString("Prefix", "&dSky X &9Network &aCHAT-DELAY &8●⏺&7");
-        chatPrefix = LegacyComponentSerializer.legacyAmpersand().deserialize(prefix);
+        registerCommands();
+        registerEvents();
 
-        // Enregistrer l'événement
-        getServer().getPluginManager().registerEvents(this, this);
+        Bukkit.getLogger().info(ANSI_LIGHT_GREEN + "ChatDelay plugin enabled successfully!");
+        Bukkit.getLogger().info(ANSI_LIGHT_GRAY + "Running on Paper API for Minecraft 1.21.4+");
     }
 
     @Override
     public void onDisable() {
-        Bukkit.getLogger().info(ANSI_LIGHT_GRAY + "︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹︹");
-        Bukkit.getLogger().info(ANSI_MAGENTA + " _______  ___   _  __   __    __   __    __    _  _______  _______ " + ANSI_RESET);
-        Bukkit.getLogger().info(ANSI_MAGENTA + "|       ||   | | ||  | |  |  |  |_|  |  |  |  | ||       ||       |" + ANSI_RESET);
-        Bukkit.getLogger().info(ANSI_MAGENTA + "|  _____||   |_| ||  |_|  |  |       |  |   |_| ||    ___||_     _|" + ANSI_RESET);
-        Bukkit.getLogger().info(ANSI_MAGENTA + "| |_____ |      _||       |  |       |  |       ||   |___   |   |  " + ANSI_RESET);
-        Bukkit.getLogger().info(ANSI_MAGENTA + "|_____  ||     |_ |_     _|   |     |   |  _    ||    ___|  |   |  " + ANSI_RESET);
-        Bukkit.getLogger().info(ANSI_MAGENTA + " _____| ||    _  |  |   |    |   _   |  | | |   ||   |___   |   |  " + ANSI_RESET);
-        Bukkit.getLogger().info(ANSI_MAGENTA + "|_______||___| |_|  |___|    |__| |__|  |_|  |__||_______|  |___|  " + ANSI_RESET);
-        Bukkit.getLogger().info("   ");
-        Bukkit.getLogger().info(ANSI_RED + "  Plugin ChatDelay disabled !");
-        Bukkit.getLogger().info(ANSI_LIGHT_GRAY + "︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺︺");
+        printBanner(false);
+
         if (adventure != null) {
             adventure.close();
         }
     }
 
+    private void registerCommands() {
+        CooldownCommand cooldownCommand = new CooldownCommand(chatManager);
+        getCommand("cooldown").setExecutor(cooldownCommand);
+        getCommand("cooldown").setTabCompleter(cooldownCommand);
+    }
+
+    private void registerEvents() {
+        getServer().getPluginManager().registerEvents(this, this);
+    }
+
     @EventHandler
     public void onPlayerChat(AsyncChatEvent event) {
         Player player = event.getPlayer();
-        UUID playerId = player.getUniqueId();
-        long currentTime = System.currentTimeMillis();
 
-        // Vérifier si le joueur a la permission de bypass
-        if (player.hasPermission("skyxnetwork.chat-delay")) {
-            chatCooldowns.remove(playerId); // Pas de cooldown pour les administrateurs
+        if (permissionHandler.hasBypassPermission(player)) {
+            chatManager.clearCooldown(player);
             return;
         }
 
-        // Déterminer le délai du joueur en fonction des permissions
-        double delay = getChatDelay(player);
-        long cooldownTime = (long) (delay * 1000); // Convertir en millisecondes
+        String message = PlainTextComponentSerializer.plainText().serialize(event.message());
 
-        // Vérifier le cooldown
-        long lastChatTime = chatCooldowns.getOrDefault(playerId, 0L);
-        if (currentTime - lastChatTime < cooldownTime) {
-            // Temps restant avant le prochain message
-            double timeLeft = (cooldownTime - (currentTime - lastChatTime)) / 1000.0;
-
-            // Annuler l'événement et informer le joueur
+        if (antiSpamDetector.detectSpam(player, message)) {
             event.setCancelled(true);
-            adventure.player(player).sendMessage(chatPrefix.append(
-                    Component.text(" You need to wait " + String.format("%.1f", timeLeft) + " seconds before sending another message!")
-                            .color(NamedTextColor.RED)
-            ));
+            adventure.player(player).sendMessage(MessageFactory.spamDetectedMessage());
             return;
         }
 
-        // Mettre à jour le temps du dernier message
-        chatCooldowns.put(playerId, currentTime);
+        if (chatManager.isOnCooldown(player)) {
+            event.setCancelled(true);
+            double timeLeft = chatManager.getRemainingCooldown(player);
+            adventure.player(player).sendMessage(MessageFactory.cooldownMessage(timeLeft));
+            return;
+        }
+
+        chatManager.updateCooldown(player);
     }
 
-    /**
-     * Récupère le délai en fonction des permissions du joueur.
-     *
-     * @param player Le joueur.
-     * @return Le délai (en secondes).
-     */
-    private double getChatDelay(Player player) {
-        // Délai par défaut
-        double defaultDelay = 3.0; // Augmenté à 3 secondes
+    public void reloadPlugin() {
+        reloadConfig();
+        MessageFactory.initialize(this);
+        permissionHandler.reload();
+    }
 
-        // Vérifier les permissions dynamiques
-        for (double i = 0.1; i <= defaultDelay; i += 0.1) {
-            String permission = "skyxnetwork.chat-delay." + String.format("%.1f", i);
-            if (player.hasPermission(permission)) {
-                return i;
-            }
-        }
-        return defaultDelay; // Retourne la valeur par défaut si aucune permission n'est trouvée
+    public ChatManager getChatManager() {
+        return chatManager;
+    }
+
+    public PermissionHandler getPermissionHandler() {
+        return permissionHandler;
+    }
+
+    public AntiSpamDetector getAntiSpamDetector() {
+        return antiSpamDetector;
+    }
+
+    private void printBanner(boolean enabled) {
+        String color = enabled ? ANSI_LIGHT_GREEN : ANSI_RED;
+        String status = enabled ? "enabled" : "disabled";
+
+        Bukkit.getLogger().info(ANSI_LIGHT_GRAY + "╔════════════════════════════════════════════════════════════════════════╗");
+        Bukkit.getLogger().info(ANSI_MAGENTA + "║  _______  ___   _  __   __    __   __    __    _  _______  _______  ║");
+        Bukkit.getLogger().info(ANSI_MAGENTA + "║ |       ||   | | ||  | |  |  |  |_|  |  |  |  | ||       ||       | ║");
+        Bukkit.getLogger().info(ANSI_MAGENTA + "║ |  _____||   |_| ||  |_|  |  |       |  |   |_| ||    ___||_     _| ║");
+        Bukkit.getLogger().info(ANSI_MAGENTA + "║ | |_____ |      _||       |  |       |  |       ||   |___   |   |   ║");
+        Bukkit.getLogger().info(ANSI_MAGENTA + "║ |_____  ||     |_ |_     _|   |     |   |  _    ||    ___|  |   |   ║");
+        Bukkit.getLogger().info(ANSI_MAGENTA + "║  _____| ||    _  |  |   |    |   _   |  | | |   ||   |___   |   |   ║");
+        Bukkit.getLogger().info(ANSI_MAGENTA + "║ |_______||___| |_|  |___|    |__| |__|  |_|  |__||_______|  |___|   ║");
+        Bukkit.getLogger().info(ANSI_LIGHT_GRAY + "╚════════════════════════════════════════════════════════════════════════╝");
+        Bukkit.getLogger().info("  ");
+        Bukkit.getLogger().info(color + "  ChatDelay plugin " + status + "!");
+        Bukkit.getLogger().info(ANSI_LIGHT_GRAY + "╚════════════════════════════════════════════════════════════════════════╝");
     }
 }

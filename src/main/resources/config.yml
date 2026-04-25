@@ -1,2 +1,23 @@
-# The main plugin prefix.
-Prefix: "&dSky X &9Network &aCHAT-DELAY &8●⏺&7"
+Prefix: "&dSky X &9Network &aCHAT-DELAY &8>>> &7"
+
+default-delay: 3.0
+
+anti-spam:
+  enabled: true
+  max-repeated: 2
+  message-history: 5
+
+ranks:
+  vip:
+    delay: 1.0
+  member:
+    delay: 2.0
+  default:
+    delay: 3.0
+
+custom-permission-delay: 5.0
+
+messages:
+  cooldown: "&cYou need to wait {time} seconds before sending another message!"
+  spam-detected: "&cSpam detected! Repeating the same message is not allowed."
+  no-permission: "&cYou don't have permission to use this command."
