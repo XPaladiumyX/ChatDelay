@@ -63,6 +63,9 @@ public final class ChatDelay extends JavaPlugin implements Listener {
         CooldownCommand cooldownCommand = new CooldownCommand(chatManager);
         getCommand("cooldown").setExecutor(cooldownCommand);
         getCommand("cooldown").setTabCompleter(cooldownCommand);
+
+        ReloadCommand reloadCommand = new ReloadCommand(this);
+        getCommand("chatdelayreload").setExecutor(reloadCommand);
     }
 
     private void registerEvents() {

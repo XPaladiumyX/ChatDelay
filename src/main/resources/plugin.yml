@@ -9,12 +9,19 @@ commands:
     description: Admin command to manage player chat delays
     usage: /<command> <set|reset|check|list> [player] [delay]
     permission: skyxnetwork.chatdelay.admin.setcooldown
+  chatdelayreload:
+    description: Reload the plugin configuration
+    usage: /<command>
+    permission: skyxnetwork.chatdelay.admin.reload
 permissions:
   skyxnetwork.chatdelay.bypass:
     description: Bypass all chat delays
     default: op
   skyxnetwork.chatdelay.admin.setcooldown:
     description: Set or reset chat delays for players
+    default: op
+  skyxnetwork.chatdelay.admin.reload:
+    description: Reload the plugin configuration
     default: op
   skyxnetwork.chatdelay.admin.override:
     description: Override permission-based delays

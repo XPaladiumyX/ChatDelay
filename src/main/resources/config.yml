@@ -4,7 +4,7 @@ default-delay: 3.0
 
 anti-spam:
   enabled: true
-  max-repeated: 2
+  max-repeated: 3
   message-history: 5
 
 ranks:
